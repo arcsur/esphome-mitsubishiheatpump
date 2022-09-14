@@ -246,6 +246,19 @@ void MitsubishiHeatPump::control(const climate::ClimateCall &call) {
     hp->update();
 }
 
+
+void MitsubishiHeatPump::hpPacketDebug(byte* packet, unsigned int length, const char* packetDirection) {
+    String message;
+    for (unsigned int idx = 0; idx < length; idx++) {
+        if (packet[idx] < 16) {
+          message += "0"; // pad single hex digits with a 0
+        }
+        message += String(packet[idx], HEX) + " ";
+    }
+    ESP_LOGD(TAG, "%s: %s", packetDirection, message.c_str());
+}
+
+
 void MitsubishiHeatPump::hpSettingsChanged() {
     heatpumpSettings currentSettings = hp->getSettings();
 
@@ -445,6 +458,11 @@ void MitsubishiHeatPump::setup() {
             }
     );
 #endif
+    hp->setPacketCallback(
+            [this](byte* packet, unsigned int length, const char* packetDirection) {
+                this->hpPacketDebug(packet, length, packetDirection);
+            }
+    );
 
     ESP_LOGCONFIG(
             TAG,

@@ -69,6 +69,9 @@ class MitsubishiHeatPump : public PollingComponent, public climate::Climate {
         // print the current configuration
         void dump_config() override;
 
+        // packet debug
+        void hpPacketDebug(byte* packet, unsigned int length, const char* packetDirection);
+
         // handle a change in settings as detected by the HeatPump library.
         void hpSettingsChanged();
 
